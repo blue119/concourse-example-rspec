@@ -1,0 +1,27 @@
+resources:
+- name: rspec-example
+  type: git
+  source:
+    uri: https://github.com/elct9620/concourse-example-rspec.git
+
+jobs:
+- name: run-test
+  plan:
+    - get: rspec-example
+      trigger: true
+    - task: rspec
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: { repository: ruby, tag: 2.3-alpine }
+        inputs:
+          - name: rspec-example
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            cd rspec-example
+            bundle install
+            rspec
